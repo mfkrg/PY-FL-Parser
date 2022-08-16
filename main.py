@@ -9,6 +9,15 @@ def get_html(url, params=None):
     r = requests.get(url, headers=HEADERS, params=params)
     return r
 
+def get_pages_count(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    pagination = soup.findAll('li', class_='b-pager__item')
+    if pagination:
+        return int(pagination[-1].get_text())
+    else:
+        return 1
+
+
 def get_content(html):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.findAll('h2', class_='b-post__title')
@@ -18,7 +27,7 @@ def get_content(html):
     for item in items:
         offers.append({
             'title': item.find('a', class_='b-post__link').get_text(strip=True),
-            'link': HOST + item.find('a', class_='b-post__link').get('href'),
+            'link': HOST + item.find('a', class_='b-post__link').get('href')
         })
     print(offers)
 
@@ -26,7 +35,9 @@ def get_content(html):
 def parse():
     html = get_html(URL)
     if (html.status_code == 200):
-        get_content(html.text)
+        #offers = get_content(html.text)
+        pages_count = get_pages_count(html.text)
+        print(pages_count)
     else:
         print("Error")
 
